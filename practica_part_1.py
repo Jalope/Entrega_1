@@ -75,7 +75,7 @@ def get_dato(produccion, pid, eM):
     return dato
 
 
-def productorM(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen, aux):
+def productorM(produccion, lista_sem_v, lista_sem_nv, eM, parada):
     aux = 0  # se define fuera del buclque xq en la 1ª vuelta me da igual, y en las siguientes tendré guardada la nueva generación de cada proceso
     pid = int(current_process().name.split('_')[1])
     for i in range(vueltas):
@@ -96,7 +96,7 @@ def productorM(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen,
     lista_sem_nv[pid].release()
 
 
-def consumidorM(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen, aux):
+def consumidorM(produccion, lista_sem_v, lista_sem_nv, eM, parada):
     for i in range(NPROD):
         lista_sem_nv[i].acquire()
     while 1 in parada:
@@ -115,7 +115,7 @@ def consumidorM(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen
         delay()
 
 def main():
-    merge_almacen = Array('i', NPROD * vueltas)
+    #merge_almacen = Array('i', NPROD * vueltas)
 
     #variable aux para aumentarla en el bucle en el que se almacenan los elementos consumidos
     aux = Value('i', 0)
@@ -137,12 +137,12 @@ def main():
 
     lista_de_productores = [Process(target=productorM,
                                     name=f'prod_{num}',
-                                    args=(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen, aux))
+                                    args=(produccion, lista_sem_v, lista_sem_nv, eM, parada))
                             for num in range(NPROD)]
 
     lista_de_consumidores = [Process(target=consumidorM,
                                      name=f'cons_1',
-                                     args=(produccion, lista_sem_v, lista_sem_nv, eM, parada, merge_almacen, aux))]
+                                     args=(produccion, lista_sem_v, lista_sem_nv, eM, parada))]
 
     for productor in lista_de_productores + lista_de_consumidores:
         productor.start()
